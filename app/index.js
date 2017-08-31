@@ -42,26 +42,29 @@ class App extends React.Component {
   }
 
   onClickCell(cell) {
-  if (cell.isMine){
-    console.log('boom!')
-    /*open the cell but stop the game --rg*/
-  }
-  else{
-    let near = getNearbies(this.state.cells,cell.x,cell.y).filter(c => !c.isMine)
-    let arr = [cell,...near]
-    
-    
-    arr.map(cell=> {
-      const opened = {...cell,status: 'open'}
-      const tempState = [...this.state.cells]
+    if (cell.isMine){
+      /*open the cell but stop the game --rg*/
+      console.log('boom!')
+    }
+    else if(cell.nearby >0 && cell.status == 'open'){
+      return;
+    }
+    else {
+      let near = getNearbies(this.state.cells,cell.x,cell.y).filter(c => !c.isMine)
+      let arr = [cell,...near]
+      
+      
+      arr.map(cell=> {
+        const opened = {...cell,status: 'open'}
+        const tempState = [...this.state.cells]
 
-      tempState[cell.x][cell.y] = opened
-      this.setState({
-        cells: tempState
+        tempState[cell.x][cell.y] = opened
+        this.setState({
+          cells: tempState
+        })
       })
-    })
+    }
   }
-}
 
   render() {
     return (
