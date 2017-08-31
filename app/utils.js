@@ -32,7 +32,7 @@ export function generateCells(rowCount, columnCount, mines) {
         y:j,
         isMine: mines.includes(`${i},${j}`),
         nearby: nearbies.length,
-        status: 'open'
+        status: 'close'
       })
     }
     cells.push(arr)
