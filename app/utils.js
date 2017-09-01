@@ -10,7 +10,6 @@ export function generateMines(rowCount, columnCount, mineCount) {
     const mine = `${x},${y}`
     mines.push(mine)    
   }
-  console.log(mines)
   return mines
 }
 

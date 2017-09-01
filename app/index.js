@@ -42,27 +42,47 @@ class App extends React.Component {
   }
 
   onClickCell(cell) {
-    if (cell.isMine){
-      /*open the cell but stop the game --rg*/
-      console.log('boom!')
+    const {cells} = this.state
+    const self = this
+
+    function stateUpdate(trg){
+      const opened = {...trg,status: 'open'}
+      const tempState = [...cells]
+
+      tempState[trg.x][trg.y] = opened
+      self.setState({
+        cells: tempState
+      })
     }
-    else if(cell.nearby >0 && cell.status == 'open'){
+
+    if (cell.isMine && cell.status == 'close'){
+      stateUpdate(cell)      
+    }
+    else if((!cell.isMine && cell.nearby !== 0) && cell.status == 'close'){
+      stateUpdate(cell)
+    }
+    else if(cell.status == 'open'){
       return;
     }
-    else {
-      let near = getNearbies(this.state.cells,cell.x,cell.y).filter(c => !c.isMine)
-      let arr = [cell,...near]
-      
-      
-      arr.map(cell=> {
-        const opened = {...cell,status: 'open'}
-        const tempState = [...this.state.cells]
+    else if (cell.nearby === 0){
+      let arr = []
+      let temp = [cell]
 
-        tempState[cell.x][cell.y] = opened
-        this.setState({
-          cells: tempState
+      while(temp.length > 0){
+        let cont = []
+        temp.map(c => {
+          arr.push(c)
+
+          const nears = getNearbies(cells,c.x,c.y).filter(e => !e.isMine).filter(e=> e.status == 'close')
+          const nears2 = nears.filter(e => !cont.includes(e)).filter(e => !arr.includes(e)).filter(e => e.length !== 0)
+
+          nears2.map(e =>{
+             e.nearby === 0 ? cont.push(e) : arr.push(e)
+          })
         })
-      })
+        temp = cont
+      }
+      arr.map(cell=> stateUpdate(cell))
     }
   }
 
