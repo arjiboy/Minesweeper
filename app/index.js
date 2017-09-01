@@ -40,7 +40,6 @@ class App extends React.Component {
     const cells = generateCells(rows, columns, minesList)
 
     this.setState({ cells,gameOver: false })
-    console.log(minesList)
   }
 
   onClickCell(cell) {
