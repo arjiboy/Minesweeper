@@ -24,7 +24,8 @@ class App extends React.Component {
 
     this.state = { 
       cells: [], 
-      level: 'beginner' 
+      level: 'beginner',
+      gameOver: false 
     }
     this.onClickCell = this.onClickCell.bind(this)
   }
@@ -38,14 +39,15 @@ class App extends React.Component {
     const minesList = generateMines(rows, columns, mines)
     const cells = generateCells(rows, columns, minesList)
 
-    this.setState({ cells })
+    this.setState({ cells,gameOver: false })
+    console.log(minesList)
   }
 
   onClickCell(cell) {
-    const {cells} = this.state
+    const {cells,gameOver} = this.state
     const self = this
 
-    function stateUpdate(trg){
+    function openCells(trg){
       const opened = {...trg,status: 'open'}
       const tempState = [...cells]
 
@@ -54,12 +56,19 @@ class App extends React.Component {
         cells: tempState
       })
     }
-
-    if (cell.isMine && cell.status == 'close'){
-      stateUpdate(cell)      
+    if (gameOver){
+      return;
+    }
+    else if (cell.isMine && cell.status == 'close'){
+      let mines = []
+      cells.map(c => c.map(e => e.isMine && mines.push(e)))
+      self.setState({
+        gameOver: true
+      }) 
+      mines.map(c => openCells(c))  
     }
     else if((!cell.isMine && cell.nearby !== 0) && cell.status == 'close'){
-      stateUpdate(cell)
+      openCells(cell)
     }
     else if(cell.status == 'open'){
       return;
@@ -82,11 +91,15 @@ class App extends React.Component {
         })
         temp = cont
       }
-      arr.map(cell=> stateUpdate(cell))
+      arr.map(cell=> openCells(cell))
     }
   }
 
   render() {
+    const gameOver = {
+      fontSize:'26px',
+      margin: '5px'
+    }
     return (
       <div className="container">
         <h1>Minesweeper</h1>
@@ -96,12 +109,18 @@ class App extends React.Component {
           onClickCell={this.onClickCell}
         />
 
-        <button
-          style={styles.newGame}
-          onClick={() => this.newGame()}
-        >
-          {'New Game'}
-        </button>
+        <div>
+          <button
+            style={styles.newGame}
+            onClick={() => this.newGame()}
+          >
+            {'New Game'}
+          </button>
+          {
+            this.state.gameOver &&
+            <strong style={gameOver}>GAME OVER</strong>
+          }
+        </div>        
       </div>
     )
   }
