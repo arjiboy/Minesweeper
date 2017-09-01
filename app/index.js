@@ -25,13 +25,26 @@ class App extends React.Component {
     this.state = { 
       cells: [], 
       level: 'beginner',
-      gameOver: false 
+      gameOver: false,
+      message: ''
     }
     this.onClickCell = this.onClickCell.bind(this)
   }
 
   componentDidMount() {
     this.newGame()
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const {cells,gameOver} = this.state
+    let closed = []
+    cells.map(c => c.map(e => (!e.isMine && e.status == 'close') && closed.push(e)))
+    if (closed.length === 0){
+      setState({
+        gameOver: true,
+        message: 'YOU WIN!'
+      })
+    }
   }
 
   newGame() {
@@ -55,22 +68,20 @@ class App extends React.Component {
         cells: tempState
       })
     }
-    if (gameOver){
+    if (gameOver || cell.status == 'open'){
       return;
     }
-    else if (cell.isMine && cell.status == 'close'){
-      let mines = []
-      cells.map(c => c.map(e => e.isMine && mines.push(e)))
-      self.setState({
-        gameOver: true
-      }) 
-      mines.map(c => openCells(c))  
-    }
-    else if((!cell.isMine && cell.nearby !== 0) && cell.status == 'close'){
+    else if((!cell.isMine && cell.nearby !== 0)){
       openCells(cell)
     }
-    else if(cell.status == 'open'){
-      return;
+    else if (cell.isMine){
+      let mines = []
+      cells.map(c => c.map(e => e.isMine && mines.push(e)))
+      mines.map(c => openCells(c))  
+      self.setState({
+        gameOver: true,
+        message:'GAME OVER. YOU LOSE!'
+      }) 
     }
     else if (cell.nearby === 0){
       let arr = []
@@ -99,6 +110,7 @@ class App extends React.Component {
       fontSize:'26px',
       margin: '5px'
     }
+
     return (
       <div className="container">
         <h1>Minesweeper</h1>
@@ -117,7 +129,9 @@ class App extends React.Component {
           </button>
           {
             this.state.gameOver &&
-            <strong style={gameOver}>GAME OVER</strong>
+            <strong style={gameOver}>
+              {this.state.message}
+            </strong>
           }
         </div>        
       </div>
