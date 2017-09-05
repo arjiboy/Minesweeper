@@ -35,17 +35,7 @@ class App extends React.Component {
     this.newGame()
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    const {cells,gameOver} = this.state
-    let closed = []
-    cells.map(c => c.map(e => (!e.isMine && e.status == 'close') && closed.push(e)))
-    if (closed.length === 0){
-      setState({
-        gameOver: true,
-        message: 'YOU WIN!'
-      })
-    }
-  }
+  
 
   newGame() {
     const { rows, columns, mines } = LEVELS[this.state.level]
@@ -59,6 +49,19 @@ class App extends React.Component {
     const {cells,gameOver} = this.state
     const self = this
 
+  function checkWin() {
+    const {cells,gameOver} = self.state
+    let closed = []
+
+    cells.map(c => c.map(e => (!e.isMine && e.status == 'close') && closed.push(e)))
+    console.log(closed.length)
+    if (closed.length === 0){
+      self.setState({
+        gameOver: true,
+        message: 'YOU WIN!'
+      })
+    }
+  }
     function openCells(trg){
       const opened = {...trg,status: 'open'}
       const tempState = [...cells]
@@ -103,6 +106,7 @@ class App extends React.Component {
       }
       arr.map(cell=> openCells(cell))
     }
+    checkWin();    
   }
 
   render() {
