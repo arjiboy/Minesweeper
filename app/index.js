@@ -49,19 +49,19 @@ class App extends React.Component {
     const {cells,gameOver} = this.state
     const self = this
 
-  function checkWin() {
-    const {cells,gameOver} = self.state
-    let closed = []
+    function checkWin() {
+      const {cells,gameOver} = self.state
+      let closed = []
 
-    cells.map(c => c.map(e => (!e.isMine && e.status == 'close') && closed.push(e)))
-    console.log(closed.length)
-    if (closed.length === 0){
-      self.setState({
-        gameOver: true,
-        message: 'YOU WIN!'
-      })
+      cells.map(c => c.map(e => (!e.isMine && e.status == 'close') && closed.push(e)))
+      console.log(closed.length)
+      if (closed.length === 0){
+        self.setState({
+          gameOver: true,
+          message: 'YOU WIN!'
+        })
+      }
     }
-  }
     function openCells(trg){
       const opened = {...trg,status: 'open'}
       const tempState = [...cells]
